@@ -1,18 +1,21 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+var util = require("util");
+var encoder = new util.TextEncoder("utf-8");
 
-var Database = require('./db/database');
-var routes = require('./routes/controller');
+var express = require("express");
+var bodyParser = require("body-parser");
+
+var Database = require("./db/database");
+var routes = require("./routes/controller");
 
 var app = express();
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.set('view engine', 'ejs');
-app.set('views', './views');
+app.set("view engine", "ejs");
+app.set("views", "./views");
 
 // Website routes
-app.use('/', routes);
+app.use("/", routes);
 
 app.listen(3000, function () {
-    console.log("Starting at port 3000...");
+  console.log("Starting at port 3000...");
 });

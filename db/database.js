@@ -1,21 +1,24 @@
-let mongoose = require('mongoose');
+let mongoose = require("mongoose");
 
-const mongodb_url = 'mongodb+srv://dbLinh:linhlove@cluster0.nhujk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+const mongodb_url =
+  "mongodb+srv://dbLinh:aQpHbwDTrFL5IPql@cluster0.nhujk.mongodb.net/restaurant-api?retryWrites=true&w=majority";
 
 class Database {
-    constructor() {
-        this._connect()
-    }
+  constructor() {
+    this._connect();
+  }
 
-    _connect() {
-        mongoose.connect(mongodb_url, {useNewUrlParser: true})
-            .then(() => {
-                console.log("Database connection successfully!");
-            })
-            .catch(err => {
-                console.log("Database connection error!");
-            })
-    }
+  _connect() {
+    mongoose
+      .connect(mongodb_url, { useNewUrlParser: true })
+      .then(() => {
+        console.log("Database connection successfully!");
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log("Database connection error!");
+      });
+  }
 }
 
 module.exports = new Database();
