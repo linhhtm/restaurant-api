@@ -6,11 +6,10 @@ const recipe = require("../mock-data/recipe");
 /**
  * Home page: loading all recipe
  */
-router.get("/", (req, res) => {
+router.get("/recipe", (req, res) => {
   Recipe.find({})
     .then((recipes) => {
       res.send(recipes);
-      // res.render('home', { recipes: recipes })
     })
     .catch((err) => {
       console.log("Error: ", err);
@@ -22,10 +21,22 @@ router.get("/", (req, res) => {
 /**
  * Add new Recipe
  */
-router.post("/", (req, res) => {
-  let newProduct = new Recipe(recipe);
-
-  newProduct
+router.post("/recipe", (req, res) => {
+  // let newRecipe = new Recipe(recipe);
+  const body = req.body || {};
+  console.log(body.name)
+  let newRecipe = new Recipe({
+    name: body.name,
+    type: body.type,
+    image: body.image,
+    category: body.category,
+    desc: body.desc,
+    content: body.content,
+    author: body.author,
+    ingredients: body.ingredients,
+    tags: body.tags
+  })
+  newRecipe
     .save()
     .then((doc) => {
       res.send(doc);
@@ -41,9 +52,9 @@ router.post("/", (req, res) => {
 /**
  * Go to Update Recipe page
  */
-router.get("/update-recipe/:productId", async (req, res) => {
+router.get("/update-recipe/:recipeId", async (req, res) => {
   try {
-    let recipe = await Recipe.findById(req.params.productId).exec();
+    let recipe = await Recipe.findById(req.params.recipeId).exec();
     res.send(recipe);
     // res.render('update-recipe', { recipe: recipe });
   } catch (err) {
@@ -54,9 +65,9 @@ router.get("/update-recipe/:productId", async (req, res) => {
 /**
  * Delete recipe
  */
-router.delete("/:productId", (req, res) => {
-  let productId = req.params.productId;
-  Recipe.findByIdAndDelete(productId, (err, doc) => {
+router.delete("/:recipeId", (req, res) => {
+  let recipeId = req.params.recipeId;
+  Recipe.findByIdAndDelete(recipeId, (err, doc) => {
     if (err) throw err;
     res.send(doc);
   });
@@ -65,11 +76,11 @@ router.delete("/:productId", (req, res) => {
 /**
  * Update recipe
  */
-router.post("/:productId", (req, res) => {
-  let productId = req.params.productId;
+router.post("/:recipeId", (req, res) => {
+  let recipeId = req.params.recipeId;
   Recipe.findByIdAndUpdate(
-    { _id: productId },
-    { $set: { name: req.body.productName, type: req.body.productType } },
+    { _id: recipeId },
+    { $set: { name: req.body.recipeName, type: req.body.recipeType } },
     { useFindAndModify: false }
   ).then((doc) => {
     res.redirect("/");

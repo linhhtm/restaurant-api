@@ -3,9 +3,11 @@ var mongoose = require("mongoose");
 var recipeSchema = mongoose.Schema({
   name: {
     type: String,
+    required: true,
   },
   image: {
     type: String,
+    required: true,
   },
   category: {
     name: {
@@ -14,20 +16,18 @@ var recipeSchema = mongoose.Schema({
   },
   desc: {
     type: String,
+    required: true,
   },
-  content: { type: String },
+  content: { type: String, required: true },
   author: {
     name: {
       type: String,
     },
   },
-  createdAt: {
-    type: Date,
-  },
   ingredients: [
     {
-      name: { type: String },
-      quantity: { type: Number },
+      name: { type: String, required: true, },
+      quantity: { type: Number, required: true, },
       unit: { type: String },
     },
   ],
@@ -36,6 +36,8 @@ var recipeSchema = mongoose.Schema({
       name: { type: String },
     },
   ],
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model("recipe", recipeSchema, "recipe");
