@@ -1,7 +1,7 @@
 let mongoose = require("mongoose");
 
 const mongodb_url =
-  "mongodb+srv://dbLinh:aQpHbwDTrFL5IPql@cluster0.nhujk.mongodb.net/restaurant-api?retryWrites=true&w=majority";
+  "mongodb+srv://dbLinh:UyT3ypenB03tEeMw@cluster0.nhujk.mongodb.net/restaurant-api?retryWrites=true&w=majority";
 
 class Database {
   constructor() {

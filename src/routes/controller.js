@@ -7,15 +7,32 @@ const recipe = require("../mock-data/recipe");
  * Home page: loading all recipe
  */
 router.get("/recipe", (req, res) => {
-  Recipe.find({})
-    .then((recipes) => {
-      res.send(recipes);
+  // Recipe.find({})
+  //   .then((recipes) => {
+  //     res.send(recipes);
+  //   })
+    Recipe.aggregate([{
+      $lookup: {
+        from: "category",
+        pipeline: [
+          { $match: {
+            _id: {
+              $in: ["category"]
+            } 
+          } },
+          { $project: { _id: 0, category: { name: "$name", image: "$image" } } },
+          { $replaceRoot: { newRoot: "$category" } }
+       ],
+        as: "category"
+      }
+    },]).exec((err, recipes) => {
+      if (err) {
+        console.log("Error: ", err);
+        res.status(500).send(err);
+      } else {
+        res.send(recipes);
+      }
     })
-    .catch((err) => {
-      console.log("Error: ", err);
-      res.status(500).send(err);
-      throw err;
-    });
 });
 
 /**
@@ -24,7 +41,6 @@ router.get("/recipe", (req, res) => {
 router.post("/recipe", (req, res) => {
   // let newRecipe = new Recipe(recipe);
   const body = req.body || {};
-  console.log(body.name)
   let newRecipe = new Recipe({
     name: body.name,
     type: body.type,
@@ -40,7 +56,6 @@ router.post("/recipe", (req, res) => {
     .save()
     .then((doc) => {
       res.send(doc);
-      res.redirect("/");
     })
     .catch((err) => {
       res.status(500).send(err);
@@ -50,22 +65,9 @@ router.post("/recipe", (req, res) => {
 });
 
 /**
- * Go to Update Recipe page
- */
-router.get("/update-recipe/:recipeId", async (req, res) => {
-  try {
-    let recipe = await Recipe.findById(req.params.recipeId).exec();
-    res.send(recipe);
-    // res.render('update-recipe', { recipe: recipe });
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
-
-/**
  * Delete recipe
  */
-router.delete("/:recipeId", (req, res) => {
+router.delete("/recipe/:recipeId", (req, res) => {
   let recipeId = req.params.recipeId;
   Recipe.findByIdAndDelete(recipeId, (err, doc) => {
     if (err) throw err;
@@ -76,14 +78,26 @@ router.delete("/:recipeId", (req, res) => {
 /**
  * Update recipe
  */
-router.post("/:recipeId", (req, res) => {
+router.put("/recipe/:recipeId", (req, res) => {
   let recipeId = req.params.recipeId;
+  const body = req.body || {};
+
   Recipe.findByIdAndUpdate(
     { _id: recipeId },
-    { $set: { name: req.body.recipeName, type: req.body.recipeType } },
+    { $set: { 
+      name: body.name,
+      type: body.type,
+      image: body.image,
+      category: body.category,
+      desc: body.desc,
+      content: body.content,
+      author: body.author,
+      ingredients: body.ingredients,
+      tags: body.tags    
+    } },
     { useFindAndModify: false }
   ).then((doc) => {
-    res.redirect("/");
+    res.send(doc);
   });
 });
 

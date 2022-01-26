@@ -1,18 +1,21 @@
 var mongoose = require("mongoose");
-
-var recipeSchema = mongoose.Schema({
+var Schema = mongoose.Schema;
+var recipeSchema = Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, "Name is required"],
   },
   image: {
     type: String,
     required: true,
   },
   category: {
-    name: {
-      type: String,
-    },
+    type: Array,
+    default: [{
+      _id: {
+        type: Schema.Types.ObjectId,
+      },
+    }],
   },
   desc: {
     type: String,
@@ -20,22 +23,25 @@ var recipeSchema = mongoose.Schema({
   },
   content: { type: String, required: true },
   author: {
-    name: {
-      type: String,
+    _id: {
+      type: Schema.Types.ObjectId,
     },
   },
-  ingredients: [
-    {
-      name: { type: String, required: true, },
-      quantity: { type: Number, required: true, },
-      unit: { type: String },
-    },
-  ],
-  tags: [
-    {
+  ingredients: {
+    type: Array,
+    default: [{
+      _id: { type: Schema.Types.ObjectId, required: true },
       name: { type: String },
-    },
-  ],
+      quantity: { type: Number },
+      unit: { type: String },
+    }],
+  },
+  tags: {
+    type: Array,
+    default: [{
+      _id: { type: Schema.Types.ObjectId },
+    }],
+  },
 }, {
   timestamps: true
 });
