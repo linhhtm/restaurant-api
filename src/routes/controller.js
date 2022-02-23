@@ -3,36 +3,31 @@ var router = express.Router();
 var Recipe = require("../db/models/recipe");
 const recipe = require("../mock-data/recipe");
 
+var mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId
 /**
  * Home page: loading all recipe
  */
 router.get("/recipe", (req, res) => {
-  // Recipe.find({})
-  //   .then((recipes) => {
-  //     res.send(recipes);
-  //   })
-    Recipe.aggregate([{
-      $lookup: {
-        from: "category",
-        pipeline: [
-          { $match: {
-            _id: {
-              $in: ["category"]
-            } 
-          } },
-          { $project: { _id: 0, category: { name: "$name", image: "$image" } } },
-          { $replaceRoot: { newRoot: "$category" } }
-       ],
-        as: "category"
-      }
-    },]).exec((err, recipes) => {
-      if (err) {
-        console.log("Error: ", err);
-        res.status(500).send(err);
-      } else {
-        res.send(recipes);
-      }
-    })
+  Recipe.aggregate([
+    {
+    $lookup: {
+      from: "category",
+      localField: "category",
+      foreignField: "_id",
+      pipeline: [
+        { $project: { _id: 0 }}
+      ],
+      as: "category"
+    }
+  },]).exec((err, recipes) => {
+    if (err) {
+      console.log("Error: ", err);
+      res.status(500).send(err);
+    } else {
+      res.send(recipes);
+    }
+  })
 });
 
 /**
@@ -43,14 +38,13 @@ router.post("/recipe", (req, res) => {
   const body = req.body || {};
   let newRecipe = new Recipe({
     name: body.name,
-    type: body.type,
     image: body.image,
-    category: body.category,
+    category: body.category.map(ObjectId),
     desc: body.desc,
     content: body.content,
-    author: body.author,
-    ingredients: body.ingredients,
-    tags: body.tags
+    author: ObjectId(body.author),
+    ingredients: body.ingredients.map(ObjectId),
+    tags: body.tags ? body.tags.map(ObjectId) : []
   })
   newRecipe
     .save()

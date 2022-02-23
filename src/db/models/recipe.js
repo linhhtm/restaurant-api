@@ -23,9 +23,12 @@ var recipeSchema = Schema({
   },
   content: { type: String, required: true },
   author: {
-    _id: {
-      type: Schema.Types.ObjectId,
-    },
+    type: Object,
+    default: [{
+      _id: {
+        type: Schema.Types.ObjectId,
+      },
+    }]
   },
   ingredients: {
     type: Array,
