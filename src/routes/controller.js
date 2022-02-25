@@ -1,7 +1,19 @@
 var express = require("express");
+var cors = require('cors');
+
+var app = express();
 var router = express.Router();
 var Recipe = require("../db/models/recipe");
-const recipe = require("../mock-data/recipe");
+
+app.use(cors());
+app.use(function(req, res, next) {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, POST');
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+   next();
+});
+
+
 
 var mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId
@@ -39,12 +51,14 @@ router.post("/recipe", (req, res) => {
   let newRecipe = new Recipe({
     name: body.name,
     image: body.image,
-    category: body.category.map(ObjectId),
+    category: body.category?.map(ObjectId),
     desc: body.desc,
     content: body.content,
     author: ObjectId(body.author),
-    ingredients: body.ingredients.map(ObjectId),
-    tags: body.tags ? body.tags.map(ObjectId) : []
+    ingredients: body.ingredients?.map(el => ({
+      _id: ObjectId(el)
+    })),
+    tags: body.tags?.map(ObjectId)
   })
   newRecipe
     .save()

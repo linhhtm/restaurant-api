@@ -1,5 +1,13 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+
+var ingredientSchema = Schema({
+  _id: { type: Schema.Types.ObjectId, required: true },
+  name: { type: String },
+  quantity: { type: Number },
+  unit: { type: String },
+})
+
 var recipeSchema = Schema({
   name: {
     type: String,
@@ -10,43 +18,27 @@ var recipeSchema = Schema({
     required: true,
   },
   category: {
-    type: Array,
-    default: [{
-      _id: {
-        type: Schema.Types.ObjectId,
-      },
-    }],
+    type: [Schema.Types.ObjectId],
+    required: true,
+    default: undefined
   },
   desc: {
     type: String,
     required: true,
   },
   content: { type: String, required: true },
-  author: {
-    type: Object,
-    default: [{
-      _id: {
-        type: Schema.Types.ObjectId,
-      },
-    }]
-  },
+  author: Schema.Types.ObjectId,
   ingredients: {
-    type: Array,
-    default: [{
-      _id: { type: Schema.Types.ObjectId, required: true },
-      name: { type: String },
-      quantity: { type: Number },
-      unit: { type: String },
-    }],
+    type: [ingredientSchema],
+    default: undefined,
   },
   tags: {
-    type: Array,
-    default: [{
-      _id: { type: Schema.Types.ObjectId },
-    }],
+    type: [Schema.Types.ObjectId],
+    default: undefined,
   },
-}, {
-  timestamps: true
-});
+},
+  {
+    timestamps: true
+  });
 
 module.exports = mongoose.model("recipe", recipeSchema, "recipe");
