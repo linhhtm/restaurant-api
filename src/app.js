@@ -1,18 +1,23 @@
-var util = require("util");
-var encoder = new util.TextEncoder("utf-8");
-
 var express = require("express");
+const cors = require("cors");
+const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:8080",
+    // methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    // preflightContinue: false,
+    // optionsSuccessStatus: 204,
+  })
+);
+
 var bodyParser = require("body-parser");
 
-var Database = require("./db/database");
+var Database = require("./db/database"); //create database
 var routes = require("./routes/controller");
 
-var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.set("view engine", "ejs");
-app.set("views", "./views");
 
 // Website routes
 app.use("/", routes);
