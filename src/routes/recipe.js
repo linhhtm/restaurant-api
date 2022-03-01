@@ -8,19 +8,29 @@ const statusMessage = require("../utils/constants/statusMessage");
 var mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 /**
- * Home page: loading all recipe
+ * Loading all recipe
  */
-router.get("/recipe", (req, res) => {
+router.get("/", (req, res) => {
   Recipe.aggregate([
     {
       $lookup: {
         from: "category",
         localField: "category",
         foreignField: "_id",
-        pipeline: [{ $project: { _id: 0 } }],
+        pipeline: [{ $project: { _id: 0 } }], //remove field _id in category array
         as: "category",
       },
     },
+    {
+      $lookup: {
+        from: "author",
+        localField: "author",
+        foreignField: "_id",
+        pipeline: [{ $project: { name: 1 } }],
+        as: "author",
+      },
+    },
+    { $unwind: "$author" },
   ]).exec((err, data) => {
     if (err) {
       console.log("Error: ", err);
@@ -38,7 +48,7 @@ router.get("/recipe", (req, res) => {
 /**
  * Add new Recipe
  */
-router.post("/recipe", (req, res) => {
+router.post("/", (req, res) => {
   // let newRecipe = new Recipe(recipe);
   const body = req.body || {};
   let newRecipe = new Recipe({
@@ -68,7 +78,7 @@ router.post("/recipe", (req, res) => {
 /**
  * Delete recipe
  */
-router.delete("/recipe/:recipeId", (req, res) => {
+router.delete("/:recipeId", (req, res) => {
   let recipeId = req.params.recipeId;
   Recipe.findByIdAndDelete(recipeId, (err, doc) => {
     if (err) throw err;
@@ -79,7 +89,7 @@ router.delete("/recipe/:recipeId", (req, res) => {
 /**
  * Update recipe
  */
-router.put("/recipe/:recipeId", (req, res) => {
+router.put("/:recipeId", (req, res) => {
   let recipeId = req.params.recipeId;
   const body = req.body || {};
 
