@@ -38,7 +38,7 @@ router.get("/", (req, res) => {
     } else {
       res.send({
         status: res.statusCode,
-        message: statusMessage[200],
+        message: statusMessage[res.statusCode],
         data: data,
       });
     }
@@ -72,6 +72,47 @@ router.post("/", (req, res) => {
       res.status(500).send(err);
       console.log("Error: ", err);
       throw err;
+    });
+});
+
+/**
+ * Trending recipe
+ */
+router.get("/trending", (req, res) => {
+  Recipe.aggregate([
+    {
+      $lookup: {
+        from: "category",
+        localField: "category",
+        foreignField: "_id",
+        pipeline: [{ $project: { _id: 0 } }], //remove field _id in category array
+        as: "category",
+      },
+    },
+    {
+      $lookup: {
+        from: "author",
+        localField: "author",
+        foreignField: "_id",
+        pipeline: [{ $project: { name: 1 } }],
+        as: "author",
+      },
+    },
+    { $unwind: "$author" },
+  ])
+    .sort({ updatedAt: -1 })
+    .limit(3)
+    .exec((err, data) => {
+      if (err) {
+        console.log("Error: ", err);
+        res.status(500).send(err);
+      } else {
+        res.send({
+          status: res.statusCode,
+          message: statusMessage[res.statusCode],
+          data: data,
+        });
+      }
     });
 });
 

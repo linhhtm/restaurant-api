@@ -16,6 +16,7 @@ var bodyParser = require("body-parser");
 var Database = require("./db/database"); //create database
 var recipe = require("./routes/recipe");
 var category = require("./routes/category");
+var blog = require("./routes/blog");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Website routes
 app.use("/recipe", recipe);
 app.use("/category", category);
+app.use("/blog", blog);
 
 app.listen(3000, function () {
   console.log("Starting at port 3000...");
